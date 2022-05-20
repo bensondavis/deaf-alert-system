@@ -1,29 +1,15 @@
-/*
- File/Sketch Name: SoundDirectionFinder
-
- Version No.: v1.0 Created 14 August, 2019
- 
- Original Author: Clyde A. Lettsome, PhD, PE, MEM
- 
- Description:  This code/sketch makes finding the general direction of sound easy. This code/sketch drives to LEDs to indicate which of two microphones is receiving an audible sound.
- If both microphone sensors detect sound both (left and right) LEDs light indicating that both microphones have detected sound. If one microphone sensor (left or right) detects sound,
- then the corresponding LED (left or right) will light up. If both microphone sensors detect sound then both LEDs will light up.
-
-
- License: This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License (GPL) version 3, or any later
- version of your choice, as published by the Free Software Foundation.
-
- Notes: Copyright (c) 2019 by C. A. Lettsome Services, LLC
- For more information visit https://clydelettsome.com/blog/2019/08/15/my-weekend-project-sound-direction-tester/
-
- */
-
 int leftLedPin=13;
 int rightLedPin=12;
-int rightSensorPin=7;
-int leftSensorPin=8;
-boolean rightVal = 0;
-boolean leftVal = 0;
+int rightSensorPin=8;
+int leftSensorPin=7;
+int rightVal = 0;
+int leftVal = 0;
+int mx;
+int flagl=0;
+int flagr=0;
+unsigned long time;
+unsigned long rt=0;
+unsigned long lt=0;
 
 void setup()
 {
@@ -32,37 +18,63 @@ void setup()
   pinMode(leftSensorPin, INPUT);
   pinMode(rightSensorPin, INPUT);
   Serial.begin (9600);
+  //time = micros();
 }
   
 void loop ()
 {
+  time = micros();
   rightVal =digitalRead(rightSensorPin);
   leftVal =digitalRead(leftSensorPin);
-  
-  // when the sensor detects a signal above the threshold value, LED flashes
-  if (leftVal==LOW && rightVal==LOW) 
+  if(rightVal==1 and flagr==0)
   {
-    digitalWrite(leftLedPin, LOW);
-    digitalWrite(rightLedPin, LOW);
-    Serial.println("None");
+    rt=time;
+    flagr=1;
   }
-  else if (leftVal==LOW && rightVal==HIGH)
+  if(leftVal==1 and flagl==0)
   {
-    digitalWrite(leftLedPin, LOW);
-    digitalWrite(rightLedPin, HIGH);
-    Serial.println("Right");
+    lt=time;
+    flagl=1;
   }
-  else if (leftVal==HIGH && rightVal==LOW)
+  Serial.print("rt");
+  Serial.println(rt);
+  Serial.print("lt");
+  Serial.println(lt);
+  /*if(rt < lt) 
   {
-    digitalWrite(leftLedPin, HIGH);
-    digitalWrite(rightLedPin, LOW);
-    Serial.println("Left");
+     Serial.println("right");
+     delay(2400);
+  }
+  else if (rt > lt) 
+  {
+    Serial.println("left");
+    delay(2400);
   }
   else 
   {
-    digitalWrite(leftLedPin, HIGH);
-    digitalWrite(rightLedPin, HIGH);
-    Serial.println("Both");
+      Serial.println("no sound");
+  }*/
+  //Serial.print("right");
+  //Serial.print(rt);
+  //Serial.print("---");
+  //Serial.println(rightVal);
+  //Serial.print("left");
+  //Serial.print(lt);
+  //Serial.print("---");
+  //Serial.println(leftVal);
+  //Serial.println(time);
+  /*if(rt<lt and abs(rt-lt)<
+  {
+   Serial.println("right"); 
   }
+  if(rt>lt)
+  {
+    Serial.println("left");
+  }*/
+  /*Serial.print("left");
+  Serial.println(leftVal);
+  delay(100);
+  Serial.print("right");
+  Serial.println(rightVal);*/
+  
 }
-
