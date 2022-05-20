@@ -1,80 +1,97 @@
-int leftLedPin=13;
-int rightLedPin=12;
-int rightSensorPin=8;
-int leftSensorPin=7;
-int rightVal = 0;
-int leftVal = 0;
-int mx;
-int flagl=0;
-int flagr=0;
-unsigned long time;
-unsigned long rt=0;
-unsigned long lt=0;
+const int sampleWindow = 50;
+unsigned int sensorA;
+unsigned int sensorB;
+int leftLedPin=12;
+int rightLedPin=13;
 
-void setup()
-{
-  pinMode(leftLedPin, OUTPUT);
-  pinMode(rightLedPin, OUTPUT);
-  pinMode(leftSensorPin, INPUT);
-  pinMode(rightSensorPin, INPUT);
-  Serial.begin (9600);
-  //time = micros();
+void setup() {
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  Serial.begin(9600); 
 }
-  
-void loop ()
-{
-  time = micros();
-  rightVal =digitalRead(rightSensorPin);
-  leftVal =digitalRead(leftSensorPin);
-  if(rightVal==1 and flagr==0)
+
+void loop() {
+  unsigned long startMillis = millis(); 
+ 
+  unsigned int peakToPeakA = 0;
+  unsigned int maxA = 0;
+  unsigned int minA = 1024;
+  double voltsA;
+
+  unsigned int peakToPeakB = 0; 
+  unsigned int maxB = 0;
+  unsigned int minB = 1024;
+  double voltsB;
+
+  while (millis() - startMillis < sampleWindow)
   {
-    rt=time;
-    flagr=1;
+    sensorA = analogRead(A0);
+    sensorB = analogRead(A1);
+
+    if (sensorA < 1024)
+    {
+      if (sensorA > maxA)
+      {
+        maxA = sensorA; 
+      }
+      else if (sensorA < minA)
+      {
+        minA = sensorA; 
+      }
+    }
+   
+    if (sensorB < 1024) 
+    {
+      if (sensorB > maxB)
+      {
+        maxB = sensorB; 
+      }
+      else if (sensorB < minB)
+      {
+        minB = sensorB;
+      }
+    }
   }
-  if(leftVal==1 and flagl==0)
-  {
-    lt=time;
-    flagl=1;
+
+  peakToPeakA = maxA - minA; 
+  double voltA = (peakToPeakA * 5.0) / 1024; 
+
+  peakToPeakB = maxB - minB; 
+  double voltB = (peakToPeakB * 5.0) / 1024; 
+
+  if(abs(voltA - voltB) > 0.01) {
+    if(voltA > voltB ){
+      digitalWrite(leftLedPin, LOW);
+      digitalWrite(rightLedPin, HIGH);  
+      Serial.print("right   v -> ");
+      Serial.print(voltA - voltB);
+      
+      Serial.print("   voltA -> ");
+      Serial.print(voltA);
+      Serial.print("   voltB -> ");
+      Serial.println(voltB);
+    } else if (voltA == voltB) {
+      digitalWrite(leftLedPin, HIGH);
+      digitalWrite(rightLedPin,   HIGH);
+      Serial.print("both   v -> ");
+      Serial.print(voltA - voltB);
+
+      Serial.print("   voltA -> ");
+      Serial.print(voltA);
+      Serial.print("   voltB -> ");
+      Serial.println(voltB);
+    }
+    else
+    {
+      digitalWrite(leftLedPin, HIGH);
+      digitalWrite(rightLedPin, LOW);
+      Serial.print("left   v -> ");
+      Serial.print(voltB - voltA);
+
+      Serial.print("   voltA -> ");
+      Serial.print(voltA);
+      Serial.print("   voltB -> ");
+      Serial.println(voltB);
+    }
   }
-  Serial.print("rt");
-  Serial.println(rt);
-  Serial.print("lt");
-  Serial.println(lt);
-  /*if(rt < lt) 
-  {
-     Serial.println("right");
-     delay(2400);
-  }
-  else if (rt > lt) 
-  {
-    Serial.println("left");
-    delay(2400);
-  }
-  else 
-  {
-      Serial.println("no sound");
-  }*/
-  //Serial.print("right");
-  //Serial.print(rt);
-  //Serial.print("---");
-  //Serial.println(rightVal);
-  //Serial.print("left");
-  //Serial.print(lt);
-  //Serial.print("---");
-  //Serial.println(leftVal);
-  //Serial.println(time);
-  /*if(rt<lt and abs(rt-lt)<
-  {
-   Serial.println("right"); 
-  }
-  if(rt>lt)
-  {
-    Serial.println("left");
-  }*/
-  /*Serial.print("left");
-  Serial.println(leftVal);
-  delay(100);
-  Serial.print("right");
-  Serial.println(rightVal);*/
-  
 }
