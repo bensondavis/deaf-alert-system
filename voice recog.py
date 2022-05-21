@@ -1,41 +1,51 @@
-# import speech_recognition as sr
-
-# recording = sr.Recognizer()
-
-# with sr.Microphone() as source:
-#     recording.adjust_for_ambient_noise(source)
-#     print("Please Say something:")
-#     audio = recording.listen(source)
-
-# try:
-#     print("You said: \n" + recording.recognize_google(audio))
-# except Exception as e:
-#     print(e)
-
-
-# import pyfirmata 
-from socket import timeout
+import speech_recognition as sr
 from pyfirmata import Arduino, util
 import time
+
+recording = sr.Recognizer()
 
 board = Arduino('COM3')
 
 it = util.Iterator(board)
 it.start()
 
+with sr.Microphone() as source:
+    recording.adjust_for_ambient_noise(source)
+    print("Please Say your name :")
+    name =  recording.listen(source)
+
+
+def voice_recog(dir):
+    if dir == 1:
+        direct = 'front'
+    elif dir == 2:
+        direct = 'behind'
+    elif dir == 3:
+        direct = 'right'
+    elif dir == 4:
+        direct = 'left'
+
+    with sr.Microphone() as source:
+        recording.adjust_for_ambient_noise(source)
+        # print("Please Say something:")
+        audio = recording.listen(source)
+
+    try:
+        s = recording.recognize_google(audio)
+        if name in s:
+            print("direction = ", direct)
+    except Exception as e:
+        print(e)
+
 sampleWindow = 50
-leftLedPin=12
-rightLedPin=13
-sensorA=0
-sensorB=0
-sensorC=0
-sensorD=0
-#board.analog[1].enable_reporting()
-#print(board.analog[1].read())
+leftLedPin = 12
+rightLedPin = 13
+sensorA = 0
+sensorB = 0
+sensorC = 0
+sensorD = 0
+
 analog_input1 = board.get_pin('a:0:i')
-analog_value1 = analog_input1.read()
-print(analog_value1)
-time.sleep(0.5)
 analog_input2 = board.get_pin('a:1:i')
 analog_input3 = board.get_pin('a:2:i')
 analog_input4 = board.get_pin('a:3:i')
@@ -60,11 +70,14 @@ while True:
     minD = 1024
 
     while (time.time() - startMillis < sampleWindow):
-        #sensorA = board.analog[0].read()
-        #print(sensorA)
-        sensorB = analog_input2.read()
-        sensorC = analog_input3.read()
-        sensorD = analog_input4.read()
+        sensorA = board.analog[0].read()
+        time.sleep(0.5)
+        sensorB = board.analog[1].read()
+        time.sleep(0.5)
+        sensorC = board.analog[2].read()
+        time.sleep(0.5)
+        sensorD = board.analog[3].read()
+        time.sleep(0.5)
 
         if (sensorA < 1024):
             if (sensorA > maxA):
@@ -100,26 +113,29 @@ while True:
     voltC = (peakToPeakC * 5.0) / 1024
 
     peakToPeakD = maxD - minD
-    voltD = (peakToPeakD * 5.0) / 1024   
-            
-    if(voltA + voltB + voltC + voltD > 0.09):
-        if(voltA > voltB and voltA > voltC and voltA > voltD):
-            board.digital[leftLedPin],write(0)
-            board.digital[rightLedPin],write(1)
-            # digitalWrite(leftLedPin, LOW)
-            # digitalWrite(rightLedPin, HIGH)  
-            print("A  voltA ->",voltA,"  voltB -> ",voltB, "voltC -> ",voltC,"  voltD ->", voltD)
+    voltD = (peakToPeakD * 5.0) / 1024
 
-        elif (voltB > voltA and voltB > voltC  and voltB > voltD):
-            board.digital[leftLedPin],write(1)
-            board.digital[rightLedPin],write(0)
+    if (voltA + voltB + voltC + voltD > 0.09):
+        if (voltA > voltB and voltA > voltC and voltA > voltD):
+            board.digital[leftLedPin]. write(0)
+            board.digital[rightLedPin]. write(1)
+            # digitalWrite(leftLedPin, LOW)
+            # digitalWrite(rightLedPin, HIGH)
+            print("A  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            voice_recog(1)
+
+        elif (voltB > voltA and voltB > voltC and voltB > voltD):
+            board.digital[leftLedPin]. write(1)
+            board.digital[rightLedPin]. write(0)
             # digitalWrite(leftLedPin, HIGH)
             # digitalWrite(rightLedPin,   LOW)
-            print("B  voltA ->",voltA,"  voltB -> ",voltB, "voltC -> ",voltC,"  voltD ->", voltD)
-            
-        elif(voltC > voltA and voltC > voltB  and voltC > voltD):
-            print("C  voltA ->",voltA,"  voltB -> ",voltB, "voltC -> ",voltC,"  voltD ->", voltD)
-    
+            print("B  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            voice_recog(2)
+
+        elif (voltC > voltA and voltC > voltB and voltC > voltD):
+            print("C  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            voice_recog(3)
+
         else:
-            print("D  voltA ->",voltA,"  voltB -> ",voltB, "voltC -> ",voltC,"  voltD ->", voltD)
-    time.sleep(0.1)
+            print("D  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            voice_recog(4)
