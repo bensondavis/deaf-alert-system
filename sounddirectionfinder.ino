@@ -114,7 +114,6 @@ void loop() {
   Serial.print("   voltD -> ");
   Serial.println(voltD);
   */
- 
   if(voltA + voltB + voltC + voltD > 0.09) {
       if(voltA > voltB and voltA > voltC and voltA > voltD){
       digitalWrite(leftLedPin, LOW);
