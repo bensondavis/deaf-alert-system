@@ -2,6 +2,7 @@ const int sampleWindow = 50;
 unsigned int sensorA;
 unsigned int sensorB;
 unsigned int sensorC;
+unsigned int sensorD;
 int leftLedPin=12;
 int rightLedPin=13;
 
@@ -9,6 +10,7 @@ void setup() {
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
   pinMode(A2, INPUT);
+  pinMode(A3, INPUT);
   Serial.begin(9600); 
 }
 
@@ -29,6 +31,11 @@ void loop() {
   unsigned int maxC = 0;
   unsigned int minC = 1024;
   double voltsC;
+
+  unsigned int peakToPeakD = 0; 
+  unsigned int maxD = 0;
+  unsigned int minD = 1024;
+  double voltsD;
 
   while (millis() - startMillis < sampleWindow)
   {
@@ -72,6 +79,17 @@ void loop() {
         minC = sensorC;
       }
     }
+       if (sensorD < 1024) 
+    {
+      if (sensorD > maxD)
+      {
+        maxD = sensorD; 
+      }
+      else if (sensorD < minD)
+      {
+        minD = sensorD;
+      }
+    }
   }
 
   peakToPeakA = maxA - minA; 
@@ -82,6 +100,9 @@ void loop() {
 
   peakToPeakC = maxC - minC; 
   double voltC = (peakToPeakC * 5.0) / 1024; 
+
+  peakToPeakD = maxD - minD; 
+  double voltD = (peakToPeakD * 5.0) / 1024; 
   /*
   Serial.print("voltA -> ");
   Serial.print(voltA);
@@ -91,11 +112,11 @@ void loop() {
   Serial.println(voltC);
   */
   
-  if(abs(voltA - voltB)>0.1 and abs(voltB - voltC) > 0.01 and abs(voltA - voltC) > 0.01) {
-    if(voltA > voltB and voltA > voltC){
+  if(voltA + voltB + voltC > 0.7) {
+    if(voltA > voltB and voltA > voltC and voltA > voltD"){
       digitalWrite(leftLedPin, LOW);
       digitalWrite(rightLedPin, HIGH);  
-      //Serial.print("right   v -> ");
+      Serial.print("A  ");
      // Serial.print(voltA - voltB);
       
       Serial.print("   voltA -> ");
@@ -104,10 +125,12 @@ void loop() {
       Serial.println(voltB);
       Serial.print("   voltC -> ");
       Serial.println(voltC);
-    } else if (voltB > voltA and voltB > voltC) {
+      Serial.print("   voltD -> ");
+      Serial.println(voltD);
+    } else if (voltB > voltA and voltB > voltC  and voltB > voltD) {
       digitalWrite(leftLedPin, HIGH);
       digitalWrite(rightLedPin,   LOW);
-      //Serial.print("left   v -> ");
+      Serial.print("B  ");
       //Serial.print(voltB - voltA);
 
       Serial.print("   voltA -> ");
@@ -116,13 +139,15 @@ void loop() {
       Serial.println(voltB);
       Serial.print("   voltC -> ");
       Serial.println(voltC);
+      Serial.print("   voltD -> ");
+      Serial.println(voltD);
     }
-    else if(voltC > voltA and voltC > voltB)
+    else if(voltC > voltA and voltC > voltB  and voltC > voltD)
     {
       //digitalWrite(leftLedPin, HIGH);
       //digitalWrite(rightLedPin, LOW);
-      Serial.print("front   v -> ");
-      Serial.print(voltB - voltA);
+      Serial.print("C  ");
+      //Serial.print(voltB - voltA);
 
       Serial.print("   voltA -> ");
       Serial.print(voltA);
@@ -130,6 +155,21 @@ void loop() {
       Serial.println(voltB);
       Serial.print("   voltC -> ");
       Serial.println(voltC);
+      Serial.print("   voltD -> ");
+      Serial.println(voltD);
+    }
+    else
+    {
+      Serial.print("D  ");
+
+      Serial.print("   voltA -> ");
+      Serial.print(voltA);
+      Serial.print("   voltB -> ");
+      Serial.println(voltB);
+      Serial.print("   voltC -> ");
+      Serial.println(voltC);
+      Serial.print("   voltD -> ");
+      Serial.println(voltD);
     }
   }
 }
