@@ -12,7 +12,9 @@ it.start()
 with sr.Microphone() as source:
     recording.adjust_for_ambient_noise(source)
     print("Please Say your name :")
-    name =  recording.listen(source)
+    audio =  recording.listen(source)
+    name = recording.recognize_google(audio)
+    print("your name : ",name)
 
 
 def voice_recog(dir):
@@ -70,6 +72,7 @@ while True:
     minD = 1024
 
     while (time.time() - startMillis < sampleWindow):
+        time.sleep(0.5)
         sensorA = board.analog[0].read()
         time.sleep(0.5)
         sensorB = board.analog[1].read()
@@ -139,3 +142,4 @@ while True:
         else:
             # print("D  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
             voice_recog(4)
+    time.sleep(0.2)
