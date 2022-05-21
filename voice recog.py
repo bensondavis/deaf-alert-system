@@ -121,7 +121,7 @@ while True:
             board.digital[rightLedPin]. write(1)
             # digitalWrite(leftLedPin, LOW)
             # digitalWrite(rightLedPin, HIGH)
-            print("A  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            # print("A  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
             voice_recog(1)
 
         elif (voltB > voltA and voltB > voltC and voltB > voltD):
@@ -129,13 +129,13 @@ while True:
             board.digital[rightLedPin]. write(0)
             # digitalWrite(leftLedPin, HIGH)
             # digitalWrite(rightLedPin,   LOW)
-            print("B  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            # print("B  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
             voice_recog(2)
 
         elif (voltC > voltA and voltC > voltB and voltC > voltD):
-            print("C  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            # print("C  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
             voice_recog(3)
 
         else:
-            print("D  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
+            # print("D  voltA ->", voltA, "  voltB -> ", voltB, "voltC -> ", voltC, "  voltD ->", voltD)
             voice_recog(4)
